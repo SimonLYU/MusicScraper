@@ -100,9 +100,35 @@
 
 ## 🚀 快速部署
 
-> 💡 本项目专为 NAS 用户设计，所有镜像均通过 tar 文件分发，无需配置镜像加速。
+### 方式一：Docker Hub 拉取（最简单）
 
-### 方式一：NAS 导入镜像（推荐）
+如果你的 NAS 或服务器可以联网访问 Docker Hub，直接拉取即可：
+
+```bash
+# x86 架构（绿联云、威联通、部分群晖）
+docker pull minzgo/music-scraper:1.0-amd64
+
+# ARM 架构（部分群晖、树莓派）
+docker pull minzgo/music-scraper:1.0-arm64
+
+# 运行容器
+docker run -d \
+  --name music-scraper \
+  -p 7301:7301 \
+  -v /你的音乐目录:/app/music \
+  -v /持久化目录:/app/data \
+  -e TZ=Asia/Shanghai \
+  --restart unless-stopped \
+  minzgo/music-scraper:1.0-amd64
+```
+
+> 💡 **Docker Hub 地址**：https://hub.docker.com/r/minzgo/music-scraper
+
+---
+
+### 方式二：NAS 导入镜像（离线部署）
+
+适用于无法联网或网络较慢的 NAS 设备。
 
 适用于所有支持 Docker 的 NAS 设备（绿联云、群晖、威联通等）。
 
@@ -140,13 +166,13 @@
 
 ---
 
-### 方式二：Docker Compose 项目（进阶）
+### 方式三：Docker Compose 项目（进阶）
 
 适用于绿联云「项目」功能或群晖 SSH 命令行，配置更灵活。
 
 > 💡 **绿联云用户注意**：使用此方式可以突破图形界面「只能选择共享文件夹」的限制，直接在配置中指定任意路径（如 `/home/用户名/Music`），无需将音乐文件移动到共享文件夹。
 
-> ⚠️ 前提：需要先完成方式一的「导入镜像」步骤！
+> ⚠️ 前提：需要先完成方式二的「导入镜像」步骤，或使用方式一从 Docker Hub 拉取镜像！
 
 **创建 Compose 配置**
 
@@ -184,7 +210,7 @@ services:
 
 ---
 
-### 方式三：Docker 命令行（高级）
+### 方式四：Docker 命令行（高级）
 
 适用于有 SSH 访问权限的用户或 Linux 服务器。
 
@@ -349,7 +375,7 @@ docker run -d \
 
 ## 📝 更新日志
 
-### v1.0.0 (2025-01)
+### v1.0.0 (2025-12)
 
 - 🎉 首个公开发布版本
 - ✅ 支持 6 大音乐数据源
