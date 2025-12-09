@@ -1,0 +1,26 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f5ff"/>
+      <stop offset="100%" stop-color="#bf00ff"/>
+    </linearGradient>
+    <radialGradient id="bgGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#0a0a12"/>
+    </radialGradient>
+  </defs>
+  
+  <!-- 背景圆 -->
+  <circle cx="60" cy="60" r="58" fill="url(#bgGradient)" stroke="url(#logoGradient)" stroke-width="2"/>
+  
+  <!-- 外环 -->
+  <circle cx="60" cy="60" r="45" stroke="url(#logoGradient)" stroke-width="3" fill="none"/>
+  
+  <!-- 中心点 -->
+  <circle cx="60" cy="60" r="15" fill="url(#logoGradient)"/>
+  
+  <!-- 准星线条 -->
+  <path d="M60 25 L60 40 M60 80 L60 95 M25 60 L40 60 M80 60 L95 60" 
+        stroke="url(#logoGradient)" stroke-width="3" stroke-linecap="round"/>
+</svg>
+
