@@ -182,7 +182,7 @@ docker run -d \
 version: '3'
 services:
   music-scraper:
-    image: music-scraper:1.0-amd64
+    image: minzgo/music-scraper:1.0-amd64
     pull_policy: never          # 重要！使用本地镜像，不从远程拉取
     container_name: music-scraper
     ports:
