@@ -50,6 +50,7 @@
 | 📦 **批量处理** | 支持整个文件夹自动批量刮削 |
 | 🎵 **多格式支持** | MP3、FLAC、M4A、OGG、WAV、WMA 等 |
 | 📝 **歌词获取** | 自动下载歌词并保存为 LRC 文件 |
+| 🎤 **内嵌歌词** | 支持将歌词直接写入音频文件元数据（MP3/FLAC/M4A/OGG/WMA 等） |
 | 🔄 **多源互补** | 首选源缺少数据时，自动从其他源补充 |
 
 ---
@@ -392,6 +393,10 @@ docker run -d \
 - 📈 **Overview 数据获取优化**：事务性获取所有数据，确保数据一致性
 
 **✨ 功能改进**
+- 🎤 **内嵌歌词支持**：支持将歌词直接写入音频文件元数据
+  - 支持格式：MP3 (USLT)、FLAC (LYRICS)、M4A/MP4 (©lyr)、OGG、Opus、WMA
+  - 独立字段：`lyrics_embedded` 与外部歌词文件 `lyrics_file` 分开管理
+  - 自动刮削和手动刮削均支持内嵌歌词写入
 - 📡 **Overview 实时状态推送**：通过 Socket.IO 实时推送扫描状态
   - `overview_scanning`：开始扫描
   - `overview_updated`：扫描完成 + 最新数据
