@@ -106,10 +106,10 @@
 
 ```bash
 # x86 架构（绿联云、威联通、部分群晖）
-docker pull minzgo/music-scraper:1.0-amd64
+docker pull minzgo/music-scraper:1.0.3-amd64
 
 # ARM 架构（部分群晖、树莓派）
-docker pull minzgo/music-scraper:1.0-arm64
+docker pull minzgo/music-scraper:1.0.3-arm64
 
 # 运行容器
 docker run -d \
@@ -119,7 +119,7 @@ docker run -d \
   -v /持久化目录:/app/data \
   -e TZ=Asia/Shanghai \
   --restart unless-stopped \
-  minzgo/music-scraper:1.0-amd64
+  minzgo/music-scraper:1.0.3-amd64
 ```
 
 > 💡 **Docker Hub 地址**：https://hub.docker.com/r/minzgo/music-scraper
@@ -135,8 +135,8 @@ docker run -d \
 **第一步：下载镜像文件**
 
 从 [Releases](https://github.com/SimonLYU/MusicScraper/releases) 页面下载：
-- `music-scraper-1.0-amd64.tar`（x86 架构，适用于绿联、威联通、部分群晖）
-- `music-scraper-1.0-arm64.tar`（ARM 架构，适用于部分群晖）
+- `music-scraper-1.0.3-amd64.tar`（x86 架构，适用于绿联、威联通、部分群晖）
+- `music-scraper-1.0.3-arm64.tar`（ARM 架构，适用于部分群晖）
 
 > 不确定架构？绿联云 NAS DXP 系列通常是 x86（amd64），选择 amd64 版本即可；DH 系列通常是 arm 架构，选择 arm64 版本即可。
 
@@ -153,7 +153,7 @@ docker run -d \
 
 | 配置项 | 值 | 说明 |
 |--------|-----|------|
-| 镜像 | `music-scraper:1.0-amd64` | 选择刚导入的镜像 |
+| 镜像 | `music-scraper:1.0.3-amd64` | 选择刚导入的镜像 |
 | 容器名称 | `music-scraper` | 自定义名称 |
 | 端口映射 | `7301` → `7301` | 本地端口 → 容器端口 |
 | 文件夹挂载 | `/你的音乐目录` → `/app/music` | 挂载你的音乐文件夹 |
@@ -182,7 +182,7 @@ docker run -d \
 version: '3'
 services:
   music-scraper:
-    image: music-scraper:1.0-amd64
+    image: music-scraper:1.0.3-amd64
     pull_policy: never          # 重要！使用本地镜像，不从远程拉取
     container_name: music-scraper
     ports:
@@ -216,7 +216,7 @@ services:
 
 ```bash
 # 1. 先导入镜像（假设 tar 文件在当前目录）
-docker load -i music-scraper-1.0-amd64.tar
+docker load -i music-scraper-1.0.3-amd64.tar
 
 # 2. 运行容器
 docker run -d \
@@ -226,7 +226,7 @@ docker run -d \
   -v /持久化目录:/app/data \
   -e TZ=Asia/Shanghai \
   --restart unless-stopped \
-  music-scraper:1.0-amd64
+  music-scraper:1.0.3-amd64
 ```
 
 访问 `http://你的IP:7301` 即可使用。
@@ -374,6 +374,59 @@ docker run -d \
 ---
 
 ## 📝 更新日志
+
+### v1.0.3 (2025-12)
+
+**⚡ 性能优化**
+- 🚀 **并行 I/O 优化**：动态线程池大小，根据 CPU 核心数自动调整（2-6 线程）
+  - 文件 I/O 线程池：2-3 线程（通用文件操作）
+  - 搜索线程池：2 线程（独立，避免阻塞页面加载）
+  - Overview 线程池：2 线程（1 个后台扫描 + 1 个前台查询）
+  - DB 查询线程池：3-4 线程（统计、历史记录等数据库查询）
+- 📊 **建立索引性能提升**：批量数据库操作、消除重复遍历，索引速度提升 2-4 倍
+  - 批量 UPSERT 操作：50-100 个文件一次性写入
+  - 消除重复 `os.walk()` 遍历：索引时收集目录，结束后批量更新快照
+  - 动态 `MAX_WORKERS`：根据 CPU 核心数自动调整（1-3 线程）
+- 🔄 **统计功能优化**：实时数据获取、批量写入优化，响应速度提升 50-75%
+- 💾 **数据库查询优化**：统一 DB 查询线程池，避免阻塞 gevent 事件循环
+- 📈 **Overview 数据获取优化**：事务性获取所有数据，确保数据一致性
+
+**✨ 功能改进**
+- 📡 **Overview 实时状态推送**：通过 Socket.IO 实时推送扫描状态
+  - `overview_scanning`：开始扫描
+  - `overview_updated`：扫描完成 + 最新数据
+  - `overview_error`：扫描失败
+- 🎨 **前端 UI 优化**：
+  - 加载状态实时显示（"正在扫描音乐库..."）
+  - 扫描进度实时更新
+  - 事件委托优化，提升文件列表点击响应速度
+  - 批量 DOM 渲染，减少页面闪烁
+
+**🐛 Bug 修复**
+- ✅ 修复文件浏览页面点击卡顿问题
+  - 使用事件委托替代单个元素事件绑定
+  - 批量 DOM 渲染（`requestAnimationFrame`）
+  - 延迟 `IntersectionObserver` 注册
+- ✅ 修复返回按钮无响应问题
+  - 事件监听器在捕获阶段绑定，提高优先级
+  - 延迟页面初始化，确保返回按钮优先响应
+- ✅ 修复自动监测触发的批量刮削 Socket 推送卡顿问题
+  - 使用队列机制（`queue.Queue`）有序推送
+  - 专用 `_progress_worker` greenlet 处理推送
+  - 防止消息积压和丢失
+- ✅ 修复 Overview 数据获取显示为 0 的问题
+  - 事务性获取所有数据（`get_full_overview()`）
+  - 保存失败时不更新频率限制时间，允许立即重试
+- ✅ 修复统计页面数据刷新问题
+  - 实时更新 `sessionStorage`
+  - 缓存优化，避免 UI 闪烁
+
+**📚 文档更新**
+- 新增并行 I/O 优化相关文档
+- 新增建立索引性能优化方案文档
+- 新增 Socket 推送问题修复总结文档
+- 新增 UI 卡顿问题复盘报告文档
+- 新增线程池架构说明文档
 
 ### v1.0.2 (2025-12)
 
