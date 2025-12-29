@@ -50,8 +50,10 @@
 | 📦 **批量处理** | 支持整个文件夹自动批量刮削 |
 | 🎵 **多格式支持** | MP3、FLAC、M4A、OGG、WAV、WMA 等 |
 | 📝 **歌词获取** | 自动下载歌词并保存为 LRC 文件 |
-| 🎤 **内嵌歌词** | 支持将歌词直接写入音频文件元数据（MP3/FLAC/M4A/OGG/WMA 等） |
+| 🎤 **内嵌歌词** | 支持将歌词直接写入音频文件元数据（MP3/FLAC/M4A/OGG/WMA/WAV/AIFF/APE/WavPack 等） |
 | 🔄 **多源互补** | 首选源缺少数据时，自动从其他源补充 |
+| 🛡️ **广告过滤** | 自动识别并清理音乐标签中的广告内容，保持元数据干净整洁（v1.0.5 新增） |
+| ⚡ **熔断保护** | 数据源连续失败后自动熔断，避免无效请求，提升稳定性（v1.0.8 新增） |
 
 ---
 
@@ -107,10 +109,10 @@
 
 ```bash
 # x86 架构（绿联云、威联通、部分群晖）
-docker pull minzgo/music-scraper:1.0.3-amd64
+docker pull minzgo/music-scraper:1.0.8-amd64
 
 # ARM 架构（部分群晖、树莓派）
-docker pull minzgo/music-scraper:1.0.3-arm64
+docker pull minzgo/music-scraper:1.0.8-arm64
 
 # 运行容器
 docker run -d \
@@ -120,7 +122,7 @@ docker run -d \
   -v /持久化目录:/app/data \
   -e TZ=Asia/Shanghai \
   --restart unless-stopped \
-  minzgo/music-scraper:1.0.3-amd64
+  minzgo/music-scraper:1.0.8-amd64
 ```
 
 > 💡 **Docker Hub 地址**：https://hub.docker.com/r/minzgo/music-scraper
@@ -136,8 +138,8 @@ docker run -d \
 **第一步：下载镜像文件**
 
 从 [Releases](https://github.com/SimonLYU/MusicScraper/releases) 页面下载：
-- `music-scraper-1.0.3-amd64.tar`（x86 架构，适用于绿联、威联通、部分群晖）
-- `music-scraper-1.0.3-arm64.tar`（ARM 架构，适用于部分群晖）
+- `music-scraper-1.0.8-amd64.tar`（x86 架构，适用于绿联、威联通、部分群晖）
+- `music-scraper-1.0.8-arm64.tar`（ARM 架构，适用于部分群晖）
 
 > 不确定架构？绿联云 NAS DXP 系列通常是 x86（amd64），选择 amd64 版本即可；DH 系列通常是 arm 架构，选择 arm64 版本即可。
 
@@ -154,7 +156,7 @@ docker run -d \
 
 | 配置项 | 值 | 说明 |
 |--------|-----|------|
-| 镜像 | `music-scraper:1.0.3-amd64` | 选择刚导入的镜像 |
+| 镜像 | `music-scraper:1.0.8-amd64` | 选择刚导入的镜像 |
 | 容器名称 | `music-scraper` | 自定义名称 |
 | 端口映射 | `7301` → `7301` | 本地端口 → 容器端口 |
 | 文件夹挂载 | `/你的音乐目录` → `/app/music` | 挂载你的音乐文件夹 |
@@ -183,7 +185,7 @@ docker run -d \
 version: '3'
 services:
   music-scraper:
-    image: music-scraper:1.0.3-amd64
+    image: music-scraper:1.0.8-amd64
     pull_policy: never          # 重要！使用本地镜像，不从远程拉取
     container_name: music-scraper
     ports:
@@ -217,7 +219,7 @@ services:
 
 ```bash
 # 1. 先导入镜像（假设 tar 文件在当前目录）
-docker load -i music-scraper-1.0.3-amd64.tar
+docker load -i music-scraper-1.0.8-amd64.tar
 
 # 2. 运行容器
 docker run -d \
@@ -227,7 +229,7 @@ docker run -d \
   -v /持久化目录:/app/data \
   -e TZ=Asia/Shanghai \
   --restart unless-stopped \
-  music-scraper:1.0.3-amd64
+  music-scraper:1.0.8-amd64
 ```
 
 访问 `http://你的IP:7301` 即可使用。
@@ -313,14 +315,17 @@ docker run -d \
 
 ## 🔧 支持的音频格式
 
-| 格式 | 元数据支持 | 封面嵌入 | 说明 |
-|------|-----------|---------|------|
-| MP3 | ✅ ID3v2 | ✅ | 最常见格式 |
-| FLAC | ✅ Vorbis | ✅ | 无损格式 |
-| M4A/AAC | ✅ MP4 | ✅ | Apple 格式 |
-| OGG | ✅ Vorbis | ✅ | 开源格式 |
-| WAV | ⚠️ 有限 | ❌ | 建议转换格式 |
-| WMA | ✅ ASF | ✅ | Windows 格式 |
+| 格式 | 元数据支持 | 封面嵌入 | 歌词嵌入 | 说明 |
+|------|-----------|---------|---------|------|
+| MP3 | ✅ ID3v2 | ✅ | ✅ | 最常见格式 |
+| FLAC | ✅ Vorbis | ✅ | ✅ | 无损格式 |
+| M4A/AAC | ✅ MP4 | ✅ | ✅ | Apple 格式 |
+| OGG | ✅ Vorbis | ✅ | ✅ | 开源格式 |
+| WAV | ⚠️ 有限 | ❌ | ✅ | 建议转换格式（v1.0.5 新增歌词支持） |
+| WMA | ✅ ASF | ✅ | ✅ | Windows 格式 |
+| AIFF | ✅ ID3v2 | ❌ | ✅ | Apple 无损格式（v1.0.5 新增歌词支持） |
+| APE | ✅ APEv2 | ❌ | ✅ | Monkey's Audio 格式（v1.0.5 新增歌词支持） |
+| WavPack | ✅ APEv2 | ❌ | ✅ | WavPack 格式（v1.0.5 新增歌词支持） |
 
 ---
 
@@ -375,6 +380,66 @@ docker run -d \
 ---
 
 ## 📝 更新日志
+
+### v1.0.8 (2025-12)
+
+**✨ 新功能**
+- 🛡️ **熔断器机制**：数据源连续失败后自动熔断，避免无效请求
+  - 连续失败 10 次后熔断 60 秒
+  - 新增 API：`/api/circuit-breaker/status` 和 `/api/circuit-breaker/reset`
+
+**⚡ 性能优化**
+- 🚀 **并发控制优化**：降低并发数，减少数据库写锁竞争
+  - MAX_WORKERS: 3 → 1-2（动态计算）
+  - MAX_IN_FLIGHT: 30 → 6
+- ⏱️ **动态超时阈值**：消除"卡住任务"误判问题
+  - 误判次数从 762 次降至 0 次
+- 💾 **刮削时暂停后台任务**：刮削期间跳过缓存清理、索引更新等后台任务
+- 📊 **进度页面优化**：结果列表改为 API 分页获取，避免前端内存溢出
+
+### v1.0.5 (2025-12)
+
+**✨ 新功能**
+- 🛡️ **广告过滤功能**：自动识别并清理音乐标签中的广告内容
+  - 支持清理推广信息（下载、关注、音乐平台推广等）
+  - 支持清理网站链接（HTTP/HTTPS、域名）
+  - 支持清理联系方式（QQ群、微信、微博等）
+  - 支持清理版权声明和特殊标记
+  - 用户可通过界面自定义广告关键词
+- 📄 **任务文件列表页面**：新增任务文件详情查看功能
+  - 可查看每个任务处理的文件列表
+  - 支持按状态筛选（成功/失败/跳过）
+  - 支持查看文件处理详情和错误信息
+- 🎨 **网站图标支持**：新增 favicon，提升用户体验
+
+**🎤 歌词功能增强**
+- 📝 **扩展音频格式歌词支持**：新增多种格式的内嵌歌词写入
+  - WAV：支持 USLT 标签歌词写入
+  - AIFF：支持 USLT 标签歌词写入
+  - APE：支持 APEv2 文本字段歌词写入
+  - WavPack：支持 APEv2 文本字段歌词写入
+
+**⚡ 性能优化**
+- 💾 **数据库索引优化**：新增多个关键索引，提升查询性能
+  - 目录快照索引：`idx_dir_snapshots_ns_path`
+  - 已知目录索引：`idx_known_dirs_path`
+  - 已知文件索引：`idx_known_files_path`
+  - API 缓存索引：`idx_search_cache_source_query`、`idx_detail_cache_source_id`
+  - 元数据备份索引：`idx_metadata_backups_path`
+- 🔍 **任务管理优化**：优化数据库查询性能和任务数据一致性
+- 📊 **文件浏览器优化**：优化导航和搜索状态恢复机制
+
+**🔧 设备码优化**
+- 🔑 **设备码生成逻辑优化**：改进设备码生成机制
+  - 优化基于硬件信息的稳定设备码生成
+  - 改进设备码持久化存储逻辑
+  - 提升设备码在不同部署环境下的稳定性
+
+**🐛 Bug 修复**
+- 修复移动端扫描间隔输入框数字显示不完整的问题
+- 修复文件浏览器导航和搜索状态恢复问题
+- 修复任务管理数据一致性问题
+- 优化历史记录查询性能
 
 ### v1.0.3 (2025-12)
 
