@@ -54,6 +54,9 @@
 | 🔄 **多源互补** | 首选源缺少数据时，自动从其他源补充 |
 | 🛡️ **广告过滤** | 自动识别并清理音乐标签中的广告内容，保持元数据干净整洁（v1.0.5 新增） |
 | ⚡ **熔断保护** | 数据源连续失败后自动熔断，避免无效请求，提升稳定性（v1.0.8 新增） |
+| 🎨 **双主题支持** | 暗夜/樱两种主题风格，支持一键切换（v1.0.9 新增） |
+| ✏️ **手动编辑** | 直接编辑元数据，支持封面上传/更换（v1.0.9 新增） |
+| 🎤 **双语歌词** | 自动合并原文和翻译歌词（v1.0.9 新增） |
 
 ---
 
@@ -109,10 +112,10 @@
 
 ```bash
 # x86 架构（绿联云、威联通、部分群晖）
-docker pull minzgo/music-scraper:1.0.8-amd64
+docker pull minzgo/music-scraper:1.0.9-amd64
 
 # ARM 架构（部分群晖、树莓派）
-docker pull minzgo/music-scraper:1.0.8-arm64
+docker pull minzgo/music-scraper:1.0.9-arm64
 
 # 运行容器
 docker run -d \
@@ -122,7 +125,7 @@ docker run -d \
   -v /持久化目录:/app/data \
   -e TZ=Asia/Shanghai \
   --restart unless-stopped \
-  minzgo/music-scraper:1.0.8-amd64
+  minzgo/music-scraper:1.0.9-amd64
 ```
 
 > 💡 **Docker Hub 地址**：https://hub.docker.com/r/minzgo/music-scraper
@@ -138,8 +141,8 @@ docker run -d \
 **第一步：下载镜像文件**
 
 从 [Releases](https://github.com/SimonLYU/MusicScraper/releases) 页面下载：
-- `music-scraper-1.0.8-amd64.tar`（x86 架构，适用于绿联、威联通、部分群晖）
-- `music-scraper-1.0.8-arm64.tar`（ARM 架构，适用于部分群晖）
+- `music-scraper-1.0.9-amd64.tar`（x86 架构，适用于绿联、威联通、部分群晖）
+- `music-scraper-1.0.9-arm64.tar`（ARM 架构，适用于部分群晖）
 
 > 不确定架构？绿联云 NAS DXP 系列通常是 x86（amd64），选择 amd64 版本即可；DH 系列通常是 arm 架构，选择 arm64 版本即可。
 
@@ -156,7 +159,7 @@ docker run -d \
 
 | 配置项 | 值 | 说明 |
 |--------|-----|------|
-| 镜像 | `music-scraper:1.0.8-amd64` | 选择刚导入的镜像 |
+| 镜像 | `music-scraper:1.0.9-amd64` | 选择刚导入的镜像 |
 | 容器名称 | `music-scraper` | 自定义名称 |
 | 端口映射 | `7301` → `7301` | 本地端口 → 容器端口 |
 | 文件夹挂载 | `/你的音乐目录` → `/app/music` | 挂载你的音乐文件夹 |
@@ -185,7 +188,7 @@ docker run -d \
 version: '3'
 services:
   music-scraper:
-    image: music-scraper:1.0.8-amd64
+    image: music-scraper:1.0.9-amd64
     pull_policy: never          # 重要！使用本地镜像，不从远程拉取
     container_name: music-scraper
     ports:
@@ -219,7 +222,7 @@ services:
 
 ```bash
 # 1. 先导入镜像（假设 tar 文件在当前目录）
-docker load -i music-scraper-1.0.8-amd64.tar
+docker load -i music-scraper-1.0.9-amd64.tar
 
 # 2. 运行容器
 docker run -d \
@@ -229,7 +232,7 @@ docker run -d \
   -v /持久化目录:/app/data \
   -e TZ=Asia/Shanghai \
   --restart unless-stopped \
-  music-scraper:1.0.8-amd64
+  music-scraper:1.0.9-amd64
 ```
 
 访问 `http://你的IP:7301` 即可使用。
@@ -380,6 +383,36 @@ docker run -d \
 ---
 
 ## 📝 更新日志
+
+### v1.0.9 (2025-12)
+
+**✨ 新功能**
+- 🎨 **双主题支持**：新增粉色赛博朋克亮色主题「樱」
+  - 暗夜主题：经典深邃暗色背景配合霓虹色彩
+  - 樱主题：粉色赛博朋克亮色风格，清新明快
+  - 可在设置页面一键切换主题
+- ✏️ **手动编辑元数据**：直接编辑歌曲信息，无需刮削
+  - 支持编辑标题、艺术家、专辑、年份、流派
+  - 支持封面图片上传/更换（JPG/PNG/WebP，最大 10MB）
+  - 赛博朋克风格编辑弹窗
+- 🎤 **双语歌词合并**：自动将原文歌词和翻译歌词按时间戳合并
+  - 支持网易云音乐、QQ音乐数据源
+  - 合并后格式：原文歌词 + 翻译歌词交替显示
+  - 歌词文件和内嵌歌词均支持双语合并
+
+**⚡ 性能优化**
+- 🚫 **任务取消优化**：改为非阻塞模式，提升用户体验
+  - 添加「正在取消任务...」加载提示
+  - 后台异步取消，API 立即返回响应
+  - 缩短任务循环超时时间，更快响应取消请求
+
+**🐛 Bug 修复**
+- ✅ 修复第二次覆写刮削时封面丢失的问题
+  - 原因：详情缓存不存储封面数据，缓存命中时未重新获取
+  - 方案：缓存命中后检查并重新下载封面数据
+- ✅ 修复手动点击立即扫描触发自动刮削卡住的问题
+  - 原因：手动触发与自动扫描在不同线程，产生竞态条件
+  - 方案：改用标志位通知机制，确保同一线程执行
 
 ### v1.0.8 (2025-12)
 
