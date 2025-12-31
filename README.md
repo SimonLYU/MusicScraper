@@ -57,6 +57,7 @@
 | 🎨 **双主题支持** | 暗夜/樱两种主题风格，支持一键切换（v1.0.9 新增） |
 | ✏️ **手动编辑** | 直接编辑元数据，支持封面上传/更换（v1.0.9 新增） |
 | 🎤 **双语歌词** | 自动合并原文和翻译歌词（v1.0.9 新增） |
+| 🔐 **登录认证** | 密码保护 + 两步验证（2FA），保护您的音乐库安全（v1.1.0 新增） |
 
 ---
 
@@ -94,6 +95,22 @@
   <img src="docs/images/screenshot-auto-scrape.png" alt="自动刮削" width="300">
 </p>
 
+### 自动监测
+
+定时扫描音乐目录，自动检测新增/修改的文件并触发刮削。
+
+<p align="center">
+  <img src="docs/images/screenshot-auto-scaner.png" alt="自动监测" width="300">
+</p>
+
+### 刮削进度
+
+实时查看批量刮削进度，支持查看成功/失败/跳过的文件详情。
+
+<p align="center">
+  <img src="docs/images/screenshot-progress.png" alt="刮削进度" width="300">
+</p>
+
 ### 音乐库统计
 
 可视化展示音乐库元数据完整度。
@@ -112,10 +129,10 @@
 
 ```bash
 # x86 架构（绿联云、威联通、部分群晖）
-docker pull minzgo/music-scraper:1.0.9-amd64
+docker pull minzgo/music-scraper:1.1.0-amd64
 
 # ARM 架构（部分群晖、树莓派）
-docker pull minzgo/music-scraper:1.0.9-arm64
+docker pull minzgo/music-scraper:1.1.0-arm64
 
 # 运行容器
 docker run -d \
@@ -125,7 +142,7 @@ docker run -d \
   -v /持久化目录:/app/data \
   -e TZ=Asia/Shanghai \
   --restart unless-stopped \
-  minzgo/music-scraper:1.0.9-amd64
+  minzgo/music-scraper:1.1.0-amd64
 ```
 
 > 💡 **Docker Hub 地址**：https://hub.docker.com/r/minzgo/music-scraper
@@ -141,8 +158,8 @@ docker run -d \
 **第一步：下载镜像文件**
 
 从 [Releases](https://github.com/SimonLYU/MusicScraper/releases) 页面下载：
-- `music-scraper-1.0.9-amd64.tar`（x86 架构，适用于绿联、威联通、部分群晖）
-- `music-scraper-1.0.9-arm64.tar`（ARM 架构，适用于部分群晖）
+- `music-scraper-1.1.0-amd64.tar`（x86 架构，适用于绿联、威联通、部分群晖）
+- `music-scraper-1.1.0-arm64.tar`（ARM 架构，适用于部分群晖）
 
 > 不确定架构？绿联云 NAS DXP 系列通常是 x86（amd64），选择 amd64 版本即可；DH 系列通常是 arm 架构，选择 arm64 版本即可。
 
@@ -159,7 +176,7 @@ docker run -d \
 
 | 配置项 | 值 | 说明 |
 |--------|-----|------|
-| 镜像 | `music-scraper:1.0.9-amd64` | 选择刚导入的镜像 |
+| 镜像 | `music-scraper:1.1.0-amd64` | 选择刚导入的镜像 |
 | 容器名称 | `music-scraper` | 自定义名称 |
 | 端口映射 | `7301` → `7301` | 本地端口 → 容器端口 |
 | 文件夹挂载 | `/你的音乐目录` → `/app/music` | 挂载你的音乐文件夹 |
@@ -188,7 +205,7 @@ docker run -d \
 version: '3'
 services:
   music-scraper:
-    image: music-scraper:1.0.9-amd64
+    image: music-scraper:1.1.0-amd64
     pull_policy: never          # 重要！使用本地镜像，不从远程拉取
     container_name: music-scraper
     ports:
@@ -222,7 +239,7 @@ services:
 
 ```bash
 # 1. 先导入镜像（假设 tar 文件在当前目录）
-docker load -i music-scraper-1.0.9-amd64.tar
+docker load -i music-scraper-1.1.0-amd64.tar
 
 # 2. 运行容器
 docker run -d \
@@ -232,7 +249,7 @@ docker run -d \
   -v /持久化目录:/app/data \
   -e TZ=Asia/Shanghai \
   --restart unless-stopped \
-  music-scraper:1.0.9-amd64
+  music-scraper:1.1.0-amd64
 ```
 
 访问 `http://你的IP:7301` 即可使用。
@@ -383,6 +400,21 @@ docker run -d \
 ---
 
 ## 📝 更新日志
+
+### v1.1.0 (2025-12)
+
+**🔐 新功能：登录认证系统**
+- 🔒 **密码保护**：支持设置登录密码，保护您的音乐库不被未授权访问
+- 📱 **两步验证（2FA）**：支持 TOTP 验证器（Google Authenticator、Microsoft Authenticator 等）
+- 🔑 **恢复码**：生成 10 个一次性恢复码，防止丢失验证器后无法登录
+- 🛡️ **暴力破解保护**：连续 5 次登录失败后锁定 5 分钟
+- 🚫 **服务端路由保护**：未登录用户无法访问任何功能页面
+
+**🔄 老用户升级**
+- 自动检测老用户，首次访问时提示设置密码
+- 无需重新配置，所有数据完全保留
+
+---
 
 ### v1.0.9 (2025-12)
 
