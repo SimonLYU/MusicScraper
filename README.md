@@ -18,7 +18,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker">
-  <img src="https://img.shields.io/badge/Python-3.9+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat-square&logo=go&logoColor=white" alt="Go">
   <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License">
   <img src="https://img.shields.io/badge/Platform-NAS-orange?style=flat-square" alt="Platform">
 </p>
@@ -48,16 +48,21 @@
 | 📱 **移动端适配** | 赛博朋克风格 UI，支持手机/平板访问 |
 | 🚀 **一键部署** | Docker 镜像开箱即用，专为 NAS 优化 |
 | 📦 **批量处理** | 支持整个文件夹自动批量刮削 |
-| 🎵 **多格式支持** | MP3、FLAC、M4A、OGG、WAV、WMA 等 |
+| 🎵 **多格式支持** | MP3、FLAC、M4A、OGG、WAV、WMA、DSF、DFF 等 |
 | 📝 **歌词获取** | 自动下载歌词并保存为 LRC 文件 |
-| 🎤 **内嵌歌词** | 支持将歌词直接写入音频文件元数据（MP3/FLAC/M4A/OGG/WMA/WAV/AIFF/APE/WavPack 等） |
+| 🎤 **内嵌歌词** | 支持将歌词直接写入音频文件元数据，独立歌词编辑页面 |
 | 🔄 **多源互补** | 首选源缺少数据时，自动从其他源补充 |
-| 🛡️ **广告过滤** | 自动识别并清理音乐标签中的广告内容，保持元数据干净整洁（v1.0.5 新增） |
-| ⚡ **熔断保护** | 数据源连续失败后自动熔断，避免无效请求，提升稳定性（v1.0.8 新增） |
-| 🎨 **双主题支持** | 暗夜/樱两种主题风格，支持一键切换（v1.0.9 新增） |
-| ✏️ **手动编辑** | 直接编辑元数据，支持封面上传/更换（v1.0.9 新增） |
-| 🎤 **双语歌词** | 自动合并原文和翻译歌词（v1.0.9 新增） |
-| 🔐 **登录认证** | 密码保护 + 两步验证（2FA），保护您的音乐库安全（v1.1.0 新增） |
+| 🛡️ **广告过滤** | 自动识别并清理音乐标签中的广告内容，保持元数据干净整洁 |
+| ⚡ **熔断保护** | 数据源连续失败后自动熔断，避免无效请求，提升稳定性 |
+| 🎨 **双主题支持** | 暗夜/樱两种主题风格，支持一键切换 |
+| ✏️ **手动编辑** | 独立编辑页面，支持元数据修改和封面上传 |
+| 🎤 **双语歌词** | 自动合并原文和翻译歌词 |
+| 🔐 **登录认证** | 密码保护 + 两步验证（2FA），保护您的音乐库安全 |
+| 🧰 **工具箱集成** | 内置工具箱前端，硬链接整理、自动分类、刮削后自动联动（v2.0.0 新增） |
+| 🎧 **Hi-Res 支持** | DSF/DFF/DTS 高解析度音频格式支持（v2.0.0 新增） |
+| 🔍 **搜索增强** | 文件浏览器支持按标题/艺术家/专辑字段筛选搜索（v2.0.0 新增） |
+| ⚡ **高性能架构** | Go 语言重构，原生并发，性能大幅提升（v2.0.0 新增） |
+| ⚙️ **并发可配置** | 刮削并发数用户可配置（1-16）（v2.0.0 新增） |
 
 ---
 
@@ -129,10 +134,10 @@
 
 ```bash
 # x86 架构（绿联云、威联通、部分群晖）
-docker pull minzgo/music-scraper:1.1.0-amd64
+docker pull minzgo/music-scraper:2.0.0-amd64
 
 # ARM 架构（部分群晖、树莓派）
-docker pull minzgo/music-scraper:1.1.0-arm64
+docker pull minzgo/music-scraper:2.0.0-arm64
 
 # 运行容器
 docker run -d \
@@ -142,7 +147,7 @@ docker run -d \
   -v /持久化目录:/app/data \
   -e TZ=Asia/Shanghai \
   --restart unless-stopped \
-  minzgo/music-scraper:1.1.0-amd64
+  minzgo/music-scraper:2.0.0-amd64
 ```
 
 > 💡 **Docker Hub 地址**：https://hub.docker.com/r/minzgo/music-scraper
@@ -158,8 +163,8 @@ docker run -d \
 **第一步：下载镜像文件**
 
 从 [Releases](https://github.com/SimonLYU/MusicScraper/releases) 页面下载：
-- `music-scraper-1.1.0-amd64.tar`（x86 架构，适用于绿联、威联通、部分群晖）
-- `music-scraper-1.1.0-arm64.tar`（ARM 架构，适用于部分群晖）
+- `music-scraper-2.0.0-amd64.tar`（x86 架构，适用于绿联、威联通、部分群晖）
+- `music-scraper-2.0.0-arm64.tar`（ARM 架构，适用于部分群晖）
 
 > 不确定架构？绿联云 NAS DXP 系列通常是 x86（amd64），选择 amd64 版本即可；DH 系列通常是 arm 架构，选择 arm64 版本即可。
 
@@ -176,7 +181,7 @@ docker run -d \
 
 | 配置项 | 值 | 说明 |
 |--------|-----|------|
-| 镜像 | `music-scraper:1.1.0-amd64` | 选择刚导入的镜像 |
+| 镜像 | `music-scraper:2.0.0-amd64` | 选择刚导入的镜像 |
 | 容器名称 | `music-scraper` | 自定义名称 |
 | 端口映射 | `7301` → `7301` | 本地端口 → 容器端口 |
 | 文件夹挂载 | `/你的音乐目录` → `/app/music` | 挂载你的音乐文件夹 |
@@ -201,11 +206,12 @@ docker run -d \
 
 在绿联云中创建新项目，或在群晖中创建 `docker-compose.yml` 文件：
 
+**基础配置（仅刮削器）：**
 ```yaml
 version: '3'
 services:
   music-scraper:
-    image: music-scraper:1.1.0-amd64
+    image: music-scraper:2.0.0-amd64
     pull_policy: never          # 重要！使用本地镜像，不从远程拉取
     container_name: music-scraper
     ports:
@@ -218,13 +224,68 @@ services:
     restart: unless-stopped
 ```
 
+**完整配置（刮削器 + 工具箱）：**
+```yaml
+version: '3'
+services:
+  # 刮削器主服务
+  music-scraper:
+    image: music-scraper:2.0.0-amd64
+    pull_policy: never
+    container_name: music-scraper
+    privileged: true
+    ports:
+      - "7301:7301"
+    volumes:
+      # Docker socket（用于“工具箱与刮削器的监控关联逻辑”，自动获取挂载映射，实现路径自动转换）
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # 将下文中“/你的音乐目录”改为你真实存放音乐的路径，注“:/app/music”部分保留勿动。
+      - /你的音乐目录:/app/music
+      - ./scraper-data:/app/data
+    environment:
+      - TZ=Asia/Shanghai
+      - TOOLBOX_URL=http://music-toolbox:7305  # 工具箱地址
+    restart: unless-stopped
+    depends_on:
+      - music-toolbox
+
+  # 工具箱服务（硬链接整理）
+  music-toolbox:
+    image: music-toolbox:2.0.0-amd64
+    pull_policy: never
+    container_name: music-toolbox
+    ports:
+      - "7305:7305"
+    volumes:
+      # Docker socket（用于"工具箱与刮削器的监控关联逻辑"，自动获取挂载映射，实现路径自动转换）
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # 挂载音乐目录的父目录，确保硬链接正常工作
+      # 例如：音乐在 /volume2/音乐，输出到 /volume2/整理后，则挂载 /volume2
+      - /你的存储卷:/app/source:rw
+      - ./toolbox-data:/app/data
+    environment:
+      - TZ=Asia/Shanghai
+      - SCRAPER_URL=http://music-scraper:7301  # 刮削器地址（用于授权验证）
+    restart: unless-stopped
+```
+
 **配置说明**
 
 | 配置项 | 说明 |
 |--------|------|
 | `image` | 必须与导入的镜像名称一致 |
 | `pull_policy: never` | 关键配置！禁止从远程拉取，只使用本地镜像 |
-| `volumes` | 第一个挂载音乐目录，第二个挂载数据目录 |
+| `volumes` | 刮削器挂载音乐目录，工具箱挂载父目录（确保硬链接正常） |
+| `TOOLBOX_URL` | 刮削器连接工具箱的地址，**必须使用 Docker 服务名**如 `http://music-toolbox:7305` |
+| `/var/run/docker.sock` | Docker socket，用于自动获取挂载映射，实现刮削器和工具箱间的路径自动转换 |
+
+> 💡 **硬链接要求**：工具箱的源目录和输出目录必须在同一挂载点（`/app/source`）下，否则会自动降级为复制。
+>
+> ⚠️ **联动配置关键点**：
+> - `TOOLBOX_URL`：刮削器连接工具箱的地址，使用 Docker 服务名 `http://music-toolbox:7305`，不能使用 `localhost`
+> - `SCRAPER_URL`：工具箱连接刮削器的地址，使用 Docker 服务名 `http://music-scraper:7301`（用于授权验证）
+> - **Docker socket 挂载**：两个服务都需要挂载 `/var/run/docker.sock`，用于自动获取挂载映射
+> - **工具箱挂载**：挂载音乐目录的**父目录**到 `/app/source`，例如音乐在 `/volume2/音乐`，则挂载 `/volume2:/app/source`
 
 **运行项目**
 
@@ -239,7 +300,7 @@ services:
 
 ```bash
 # 1. 先导入镜像（假设 tar 文件在当前目录）
-docker load -i music-scraper-1.1.0-amd64.tar
+docker load -i music-scraper-2.0.0-amd64.tar
 
 # 2. 运行容器
 docker run -d \
@@ -249,7 +310,7 @@ docker run -d \
   -v /持久化目录:/app/data \
   -e TZ=Asia/Shanghai \
   --restart unless-stopped \
-  music-scraper:1.1.0-amd64
+  music-scraper:2.0.0-amd64
 ```
 
 访问 `http://你的IP:7301` 即可使用。
@@ -307,18 +368,67 @@ docker run -d \
 1. 打开首页，点击 **"音乐库概览"** 卡片
 2. 查看元数据完整度、格式分布、刮削覆盖率等统计信息
 
+### 6️⃣ 使用工具箱（硬链接整理）
+
+> 💡 需要部署工具箱服务，参见「方式三：Docker Compose 项目」的完整配置
+
+1. 打开首页，点击 **"工具箱"** 卡片进入工具箱
+2. 点击 **"硬链接整理"** 进入整理功能
+3. 首次使用需要配置：
+   - **源目录**：选择音乐文件所在目录（在 `/app/source` 下选择）
+   - **目标目录**：选择硬链接输出目录（在 `/app/source` 下选择，需与源目录同级或平级）
+   - **分类模式**：歌手/专辑/流派/年份/平铺
+   - **重命名格式**：保留原名/音轨号-标题/歌手-标题 等
+   - **监控模式**：实时监控/定时轮询/刮削器联动（推荐刮削器联动）
+4. 可选功能：
+   - **批量整理**：一次性处理所有文件
+   - **自动监控**：开启后刮削完成自动触发整理
+
+**监控模式说明**：
+- **实时监控**：监控文件系统事件，新文件立即整理
+- **定时轮询**：每隔 N 分钟扫描一次目录
+- **刮削器联动**（推荐）：仅响应刮削器通知，确保文件元数据完整后再整理
+
+**硬链接的优势**：
+- 不占用额外磁盘空间
+- 修改元数据会同步到所有硬链接
+- 删除硬链接不影响原文件
+
 ---
 
 ## ⚙️ 配置说明
 
 ### 环境变量
 
-| 变量 | 默认值 | 说明 |
-|------|--------|------|
-| `PORT` | `7301` | 服务端口 |
-| `MUSIC_DIR` | `/app/music` | 音乐文件目录 |
-| `DATA_DIR` | `/app/data` | 数据存储目录 |
-| `TZ` | `UTC` | 时区设置 |
+| 变量 | 默认值 | 说明 | 适用服务 |
+|------|--------|------|----------|
+| `PORT` | `7301` | 服务端口 | 刮削器 |
+| `MUSIC_DIR` | `/app/music` | 音乐文件目录 | 刮削器 |
+| `DATA_DIR` | `/app/data` | 数据存储目录 | 刮削器/工具箱 |
+| `TZ` | `UTC` | 时区设置 | 刮削器/工具箱 |
+| `TOOLBOX_URL` | `http://localhost:7305` | 工具箱内部通信地址（后端间通信） | 刮削器 |
+| `TOOLBOX_EXTERNAL_URL` | 自动推断 | 工具箱外部访问地址（浏览器跳转用，反向代理场景必填） | 刮削器 |
+| `SCRAPER_URL` | 自动发现 | 刮削器地址（用于授权验证） | 工具箱 |
+| `SCRAPE_WORKERS` | `8` | 刮削并发数（1-16，可在设置界面调整） | 刮削器 |
+
+> 💡 **地址配置说明**：
+> - `TOOLBOX_URL`：刮削器**后端**连接工具箱的地址，Docker 部署时**必须**使用服务名如 `http://music-toolbox:7305`（Docker 内网通信）
+> - `TOOLBOX_EXTERNAL_URL`：用户**浏览器**跳转到工具箱的地址，反向代理场景需配置为外部可访问地址
+> - `SCRAPER_URL`：工具箱**后端**连接刮削器的地址，Docker 部署时**必须**使用服务名如 `http://music-scraper:7301`（用于授权验证）
+> - 如果未配置 `TOOLBOX_EXTERNAL_URL`，前端会自动使用 `当前页面主机名:7305` 作为跳转地址
+>
+> ⚠️ **常见错误**：`TOOLBOX_URL` 和 `SCRAPER_URL` 不能配置为 `localhost`，因为容器内的 localhost 指向容器自身！
+
+### 数据卷说明
+
+| 路径 | 说明 | 适用服务 |
+|------|------|----------|
+| `/app/music` | 音乐文件目录 | 刮削器 |
+| `/app/data` | 数据存储目录（配置、数据库） | 刮削器/工具箱 |
+| `/app/source` | 数据源根目录（包含音乐和输出目录） | 工具箱 |
+| `/var/run/docker.sock` | Docker socket（路径自动转换） | 刮削器/工具箱（联合部署时） |
+
+> 💡 **Docker socket 说明**：挂载 Docker socket 后，刮削器和工具箱可以自动获取各自的挂载映射，实现路径自动转换，无需手动配置环境变量。
 
 ### 封面尺寸设置
 
@@ -335,17 +445,29 @@ docker run -d \
 
 ## 🔧 支持的音频格式
 
+### 完全支持（读写）
+
 | 格式 | 元数据支持 | 封面嵌入 | 歌词嵌入 | 说明 |
 |------|-----------|---------|---------|------|
 | MP3 | ✅ ID3v2 | ✅ | ✅ | 最常见格式 |
 | FLAC | ✅ Vorbis | ✅ | ✅ | 无损格式 |
 | M4A/AAC | ✅ MP4 | ✅ | ✅ | Apple 格式 |
 | OGG | ✅ Vorbis | ✅ | ✅ | 开源格式 |
-| WAV | ⚠️ 有限 | ❌ | ✅ | 建议转换格式（v1.0.5 新增歌词支持） |
+| WAV | ⚠️ 有限 | ❌ | ✅ | 建议转换格式 |
 | WMA | ✅ ASF | ✅ | ✅ | Windows 格式 |
-| AIFF | ✅ ID3v2 | ❌ | ✅ | Apple 无损格式（v1.0.5 新增歌词支持） |
-| APE | ✅ APEv2 | ❌ | ✅ | Monkey's Audio 格式（v1.0.5 新增歌词支持） |
-| WavPack | ✅ APEv2 | ❌ | ✅ | WavPack 格式（v1.0.5 新增歌词支持） |
+| AIFF | ✅ ID3v2 | ❌ | ✅ | Apple 无损格式 |
+| APE | ✅ APEv2 | ❌ | ✅ | Monkey's Audio 格式 |
+| WavPack | ✅ APEv2 | ❌ | ✅ | WavPack 格式 |
+
+### Hi-Res 音频（只读，v2.0.0 新增）
+
+| 格式 | 元数据支持 | 封面嵌入 | 歌词嵌入 | 说明 |
+|------|-----------|---------|---------|------|
+| DSF | 🎧 只读 | ❌ | ❌ | DSD Stream File，索尼 Hi-Res 格式 |
+| DFF | 🎧 只读 | ❌ | ❌ | DSDIFF 格式 |
+| DTS | 🎧 只读 | ❌ | ❌ | DTS 音频格式 |
+
+> 💡 Hi-Res 格式因技术限制暂不支持写入，但可以读取并显示现有元数据，刮削时会自动跳过写入操作
 
 ---
 
@@ -400,6 +522,58 @@ docker run -d \
 ---
 
 ## 📝 更新日志
+
+### v2.0.0 (2026-01) 🎉 重大更新
+
+**🚀 架构重构**
+- ⚡ **Go 语言重构**：核心服务使用 Go 语言重写，性能大幅提升
+- 🔄 **原生并发**：Go goroutine 替代 Python gevent，无 GIL 限制
+- 💾 **多数据库架构**：分离刮削、缓存、索引、设置等数据库，避免写锁竞争
+- 🔌 **Python 微服务**：元数据读写保留 Python 实现，确保兼容性
+
+**🔗 工具箱深度集成**
+- 🧰 **前端统一**：工具箱前端集成到刮削器，无跨域问题
+- 🔍 **服务检测**：智能检测工具箱部署状态，未部署时显示友好提示
+- 🔗 **硬链接整理**：将刮削后的音乐文件以硬链接方式输出到指定目录
+- 📁 **自动分类**：支持按歌手/专辑/流派/年份自动分类（5 种分类模式）
+- ✏️ **文件重命名**：支持多种重命名格式（音轨号-标题、歌手-标题等）
+- 🔄 **自动联动**：刮削完成后自动通知工具箱进行硬链接整理
+- ⚡ **跨设备支持**：检测跨文件系统情况，自动降级为软链接或复制
+- 📝 **操作记录**：记录每次整理的详细信息，支持回溯查看
+- 🛡️ **死循环防护**：自动排除工具箱输出目录，防止循环触发
+
+**🎧 Hi-Res 音频支持**
+- 🎵 **DSF 格式**：支持 DSD Stream File 格式读取（索尼 Hi-Res 格式）
+- 🎵 **DFF 格式**：支持 DSDIFF 格式读取
+- 🎵 **DTS 格式**：支持 DTS 音频格式读取
+- ⚠️ Hi-Res 格式暂为只读，元数据修改后自动跳过写入
+
+**✨ 功能改进**
+- 🎤 **歌词多源互补**：歌词获取支持多源互补，首选源无歌词时自动从其他源获取
+- ⚙️ **并发可配置**：刮削并发数可在设置界面配置（1-16）
+- ✏️ **歌词编辑页面**：新增独立歌词查看/编辑页面，支持修改内嵌歌词
+- ✏️ **手动编辑重构**：手动编辑功能重构为独立页面，交互更流畅
+- 🔍 **搜索字段选择器**：文件浏览器支持按标题/艺术家/专辑字段筛选搜索
+- ⏰ **扫描间隔扩展**：自动监测扫描间隔支持最长 7 天，支持小数分钟
+- 🎯 **专辑版本匹配**：优化置信度算法，更好地识别专辑不同版本（Deluxe、Remaster 等）
+- 🎤 **多艺术家修复**：修复多艺术家标签写入格式，主流播放器可正确识别分隔
+- 🛡️ **广告残余清理**：增强广告过滤，清理「更多打包资源」等无意义残留内容
+- 🔄 **授权迁移**：从旧版本升级时自动迁移授权信息，无需重新激活
+
+**🐛 Bug 修复**
+- 修复刮削结果不一致的问题（网络请求增加重试机制）
+- 修复工具箱页面登录检测问题
+- 修复自动监控死循环问题
+- 修复统计页面数据显示问题
+- 修复元数据完整度缓存问题
+
+**使用工具箱**：
+1. 使用 Docker Compose 部署工具箱服务（参见完整配置）
+2. 在刮削器首页点击「工具箱」卡片进入
+3. 配置源目录和目标目录，选择分类模式
+4. 可手动执行批量整理，或开启自动监控
+
+---
 
 ### v1.1.0 (2025-12)
 
@@ -634,5 +808,3 @@ docker run -d \
 <p align="center">
   如果觉得有用，请给个 ⭐ Star 支持一下！
 </p>
-
-ao
