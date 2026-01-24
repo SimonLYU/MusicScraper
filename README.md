@@ -133,11 +133,14 @@
 如果你的 NAS 或服务器可以联网访问 Docker Hub，直接拉取即可：
 
 ```bash
-# x86 架构（绿联云、威联通、部分群晖）
-docker pull minzgo/music-scraper:2.0.0-amd64
+# 推荐：自动选择合适架构
+docker pull minzgo/music-scraper:latest
 
+# 或指定架构
+# x86 架构（绿联云、威联通、部分群晖）
+docker pull minzgo/music-scraper:2.0.1-amd64
 # ARM 架构（部分群晖、树莓派）
-docker pull minzgo/music-scraper:2.0.0-arm64
+docker pull minzgo/music-scraper:2.0.1-arm64
 
 # 运行容器
 docker run -d \
@@ -147,7 +150,7 @@ docker run -d \
   -v /持久化目录:/app/data \
   -e TZ=Asia/Shanghai \
   --restart unless-stopped \
-  minzgo/music-scraper:2.0.0-amd64
+  minzgo/music-scraper:latest
 ```
 
 > 💡 **Docker Hub 地址**：https://hub.docker.com/r/minzgo/music-scraper
@@ -163,8 +166,8 @@ docker run -d \
 **第一步：下载镜像文件**
 
 从 [Releases](https://github.com/SimonLYU/MusicScraper/releases) 页面下载：
-- `music-scraper-2.0.0-amd64.tar`（x86 架构，适用于绿联、威联通、部分群晖）
-- `music-scraper-2.0.0-arm64.tar`（ARM 架构，适用于部分群晖）
+- `music-scraper-2.0.1-amd64.tar`（x86 架构，适用于绿联、威联通、部分群晖）
+- `music-scraper-2.0.1-arm64.tar`（ARM 架构，适用于部分群晖）
 
 > 不确定架构？绿联云 NAS DXP 系列通常是 x86（amd64），选择 amd64 版本即可；DH 系列通常是 arm 架构，选择 arm64 版本即可。
 
@@ -181,7 +184,7 @@ docker run -d \
 
 | 配置项 | 值 | 说明 |
 |--------|-----|------|
-| 镜像 | `music-scraper:2.0.0-amd64` | 选择刚导入的镜像 |
+| 镜像 | `music-scraper:2.0.1-amd64` | 选择刚导入的镜像 |
 | 容器名称 | `music-scraper` | 自定义名称 |
 | 端口映射 | `7301` → `7301` | 本地端口 → 容器端口 |
 | 文件夹挂载 | `/你的音乐目录` → `/app/music` | 挂载你的音乐文件夹 |
@@ -211,7 +214,7 @@ docker run -d \
 version: '3'
 services:
   music-scraper:
-    image: music-scraper:2.0.0-amd64
+    image: music-scraper:2.0.1-amd64
     pull_policy: never          # 重要！使用本地镜像，不从远程拉取
     container_name: music-scraper
     ports:
@@ -230,7 +233,7 @@ version: '3'
 services:
   # 刮削器主服务
   music-scraper:
-    image: music-scraper:2.0.0-amd64
+    image: music-scraper:2.0.1-amd64
     pull_policy: never
     container_name: music-scraper
     privileged: true
@@ -251,7 +254,7 @@ services:
 
   # 工具箱服务（硬链接整理）
   music-toolbox:
-    image: music-toolbox:2.0.0-amd64
+    image: music-toolbox:2.0.1-amd64
     pull_policy: never
     container_name: music-toolbox
     ports:
@@ -300,7 +303,7 @@ services:
 
 ```bash
 # 1. 先导入镜像（假设 tar 文件在当前目录）
-docker load -i music-scraper-2.0.0-amd64.tar
+docker load -i music-scraper-2.0.1-amd64.tar
 
 # 2. 运行容器
 docker run -d \
@@ -310,7 +313,7 @@ docker run -d \
   -v /持久化目录:/app/data \
   -e TZ=Asia/Shanghai \
   --restart unless-stopped \
-  music-scraper:2.0.0-amd64
+  music-scraper:2.0.1-amd64
 ```
 
 访问 `http://你的IP:7301` 即可使用。
@@ -522,6 +525,24 @@ docker run -d \
 ---
 
 ## 📝 更新日志
+
+### v2.0.1 (2026-01)
+
+**🐛 Bug 修复**
+- 修复自动监测保存配置时 autoScrape 被错误重置的问题（修改置信度等配置后监测失效）
+- 修复工具箱自动化流程中「分批平铺」分类模式不生效的问题
+- 修复工具箱未部署提示弹窗内容过长时无法滚动的问题
+- 修复设置保存接口无法正确保存配置的问题
+- 修复工具箱硬链接统计维度错误（改为以文件为单位统计）
+- 修复工具箱多歌手解析问题（支持英文分号无空格格式如 `歌手A;歌手B`）
+- 修复工具箱开启监控后弹窗显示错误的监控模式
+
+**✨ 功能改进**
+- 工具箱歌手合并/专辑合并新增「批量确认推荐」功能，一键确认所有推荐合并组
+- 刮削面板 UI 重构优化
+- 增强工具箱跨设备检测日志，便于诊断硬链接问题
+
+---
 
 ### v2.0.0 (2026-01) 🎉 重大更新
 
